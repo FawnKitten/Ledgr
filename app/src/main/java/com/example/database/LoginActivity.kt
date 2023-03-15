@@ -7,6 +7,10 @@ import android.os.Bundle
 import android.util.Log
 import androidx.activity.result.ActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import com.backendless.Backendless
+import com.backendless.BackendlessUser
+import com.backendless.async.callback.AsyncCallback
+import com.backendless.exceptions.BackendlessFault
 import database.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
@@ -36,6 +40,9 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Initialize Backendless
+        Backendless.initApp(this, Constants.APPLICATION_ID, Constants.ANDROID_API_KEY)
+
         binding.textViewLoginSignUp.setOnClickListener {
             // 1. create an Intent object with the current activity
             // and the destination activity's class
@@ -55,6 +62,24 @@ class LoginActivity : AppCompatActivity() {
 
             Log.d(TAG, "\nonCreate: password=${extraPassword}" +
                             "\n          username=${extraUsername}")
+        }
+
+        binding.buttonLoginConfirmLogin.setOnClickListener {
+            Backendless.UserService.login(
+                binding.editTextLoginUserName.text.toString(),
+                binding.editTextLoginPassword.text.toString(),
+                object : AsyncCallback<BackendlessUser> {
+                    override fun handleResponse(response: BackendlessUser?) {
+                        Log.d(TAG, "handleResponse: $response")
+                    }
+
+                    override fun handleFault(fault: BackendlessFault?) {
+                        Log.d(TAG, "handleFault: $fault")
+                    }
+
+                }
+            )
+
         }
     }
 }

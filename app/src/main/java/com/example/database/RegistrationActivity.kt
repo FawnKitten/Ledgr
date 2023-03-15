@@ -6,6 +6,11 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.widget.Toast
+import com.backendless.Backendless
+import com.backendless.BackendlessUser
+import com.backendless.async.callback.AsyncCallback
+import com.backendless.exceptions.BackendlessFault
+import com.backendless.servercode.annotation.Async
 import database.databinding.ActivityRegistrationBinding
 
 class RegistrationActivity : AppCompatActivity() {
@@ -56,8 +61,32 @@ class RegistrationActivity : AppCompatActivity() {
                     + "      * password=${binding.editTextTextPassword.text}\n"
                     + "      * conf-password=${binding.editTextTextPasswordConfirm.text}\n"
                     + "      * email=${binding.editTextTextEmailAddress.text}\n")
-            setResult(Activity.RESULT_OK, resultIntent)
-            finish()
+            Backendless.UserService.register(
+                BackendlessUser().apply {
+                    setProperty("username", binding.editTextTextUsername.text)
+                    setProperty("name", binding.editTextTextName.text)
+                    setProperty("password", binding.editTextTextUsername.text.toString())
+                    setProperty("email", binding.editTextTextEmailAddress.text)
+                },
+                object : AsyncCallback<BackendlessUser> {
+                    override fun handleResponse(response: BackendlessUser?) {
+                        if (response != null) {
+                            Log.d(TAG, "handleResponse: $response")
+                            setResult(Activity.RESULT_OK, resultIntent)
+                            finish()
+                        }
+                    }
+
+                    override fun handleFault(fault: BackendlessFault?) {
+                        Toast.makeText(
+                            this@RegistrationActivity,
+                            "Registering Failed",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        Log.d(TAG, "handleFault: $fault")
+                    }
+                }
+            )
 
         }
 
