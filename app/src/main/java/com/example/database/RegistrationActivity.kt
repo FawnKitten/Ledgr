@@ -43,11 +43,11 @@ class RegistrationActivity : AppCompatActivity() {
         // register an account and send bac the username && password
         // to the login activity to prefill those fields
         binding.buttonRegistrationSubmit.setOnClickListener {
-            if (!formIsCorrectlyFilled()) {
-                Toast.makeText(this, "Fill the form correctly!", Toast.LENGTH_SHORT)
-                    .show()
-                return@setOnClickListener
-            }
+//            if (!formIsCorrectlyFilled()) {
+//                Toast.makeText(this, "Fill the form correctly!", Toast.LENGTH_SHORT)
+//                    .show()
+//                return@setOnClickListener
+//            }
             val extraUsername = binding.editTextTextUsername.text.toString()
             val extraPassword = binding.editTextTextPassword.text.toString()
             // apply lambda will call the functions inside it on the object that apply is called on
@@ -63,10 +63,10 @@ class RegistrationActivity : AppCompatActivity() {
                     + "      * email=${binding.editTextTextEmailAddress.text}\n")
             Backendless.UserService.register(
                 BackendlessUser().apply {
-                    setProperty("username", binding.editTextTextUsername.text)
-                    setProperty("name", binding.editTextTextName.text)
+                    setProperty("username", binding.editTextTextUsername.text.toString())
+                    setProperty("name", binding.editTextTextName.text.toString())
                     setProperty("password", binding.editTextTextUsername.text.toString())
-                    setProperty("email", binding.editTextTextEmailAddress.text)
+                    setProperty("email", binding.editTextTextEmailAddress.text.toString())
                 },
                 object : AsyncCallback<BackendlessUser> {
                     override fun handleResponse(response: BackendlessUser?) {
