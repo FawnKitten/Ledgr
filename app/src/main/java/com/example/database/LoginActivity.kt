@@ -71,6 +71,11 @@ class LoginActivity : AppCompatActivity() {
                 object : AsyncCallback<BackendlessUser> {
                     override fun handleResponse(response: BackendlessUser?) {
                         Log.d(TAG, "handleResponse: $response")
+                        if (response != null) {
+                            retrieveAllData()
+//                            val loanListActivity = Intent(this@LoginActivity, LoanListActivity::class.java)
+//                            startActivity(loanListActivity)
+                        }
                     }
 
                     override fun handleFault(fault: BackendlessFault?) {
@@ -81,5 +86,17 @@ class LoginActivity : AppCompatActivity() {
             )
 
         }
+    }
+
+    private fun retrieveAllData() {
+        Backendless.Data.of(Loan::class.java).find(object : AsyncCallback<List<Loan>> {
+            override fun handleResponse(foundLoans: List<Loan>?) {
+                Log.d(TAG, "handleResponse: $foundLoans")
+            }
+
+            override fun handleFault(fault: BackendlessFault?) {
+                Log.d(TAG, "handleFault: ${fault?.message}")
+            }
+        })
     }
 }

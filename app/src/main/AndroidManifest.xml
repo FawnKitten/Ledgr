@@ -27,7 +27,7 @@
         </intent-filter>
     </activity>
     <activity
-        android:name="com.example.database.UserPageActivity"
+        android:name="com.example.database.LoanListActivity"
         android:exported="false" />
 </application>
 </manifest>
