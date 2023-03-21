@@ -11,6 +11,7 @@ import com.backendless.Backendless
 import com.backendless.BackendlessUser
 import com.backendless.async.callback.AsyncCallback
 import com.backendless.exceptions.BackendlessFault
+import com.backendless.persistence.DataQueryBuilder
 import database.databinding.ActivityLoginBinding
 
 class LoginActivity : AppCompatActivity() {
@@ -20,18 +21,20 @@ class LoginActivity : AppCompatActivity() {
         // and have the EXTRA_BLAH format for naming the key
         const val EXTRA_USERNAME = "username"
         const val EXTRA_PASSWORD = "very_unsafe"
+        const val EXTRA_USERID = "userid"
         const val TAG = "LoginActivity"
     }
 
-    val startRegistrationForResult = registerForActivityResult(ActivityResultContracts.StartActivityForResult())
-    { result: ActivityResult ->
-        if (result.resultCode == Activity.RESULT_OK) {
-            val intent = result.data
-            // Handle the Intent
-            binding.editTextLoginUserName.setText(intent?.getStringExtra(EXTRA_USERNAME))
-            binding.editTextLoginPassword.setText(intent?.getStringExtra(EXTRA_PASSWORD))
+    val startRegistrationForResult =
+        registerForActivityResult(ActivityResultContracts.StartActivityForResult())
+        { result: ActivityResult ->
+            if (result.resultCode == Activity.RESULT_OK) {
+                val intent = result.data
+                // Handle the Intent
+                binding.editTextLoginUserName.setText(intent?.getStringExtra(EXTRA_USERNAME))
+                binding.editTextLoginPassword.setText(intent?.getStringExtra(EXTRA_PASSWORD))
+            }
         }
-    }
 
     private lateinit var binding: ActivityLoginBinding
 
@@ -46,8 +49,10 @@ class LoginActivity : AppCompatActivity() {
         binding.textViewLoginSignUp.setOnClickListener {
             // 1. create an Intent object with the current activity
             // and the destination activity's class
-            val registrationIntent = Intent(this,
-                                            RegistrationActivity::class.java)
+            val registrationIntent = Intent(
+                this,
+                RegistrationActivity::class.java
+            )
 
             // 2. optionally add information to send with the intent
             // use key-value pairs just like bundles
@@ -60,8 +65,10 @@ class LoginActivity : AppCompatActivity() {
             // startActivity(registrationIntent)
             startRegistrationForResult.launch(registrationIntent)
 
-            Log.d(TAG, "\nonCreate: password=${extraPassword}" +
-                            "\n          username=${extraUsername}")
+            Log.d(
+                TAG, "\nonCreate: password=${extraPassword}" +
+                        "\n          username=${extraUsername}"
+            )
         }
 
         binding.buttonLoginConfirmLogin.setOnClickListener {
@@ -72,9 +79,11 @@ class LoginActivity : AppCompatActivity() {
                     override fun handleResponse(response: BackendlessUser?) {
                         Log.d(TAG, "handleResponse: $response")
                         if (response != null) {
-                            retrieveAllData()
-//                            val loanListActivity = Intent(this@LoginActivity, LoanListActivity::class.java)
-//                            startActivity(loanListActivity)
+//                            retrieveAllData(response.userId)
+                            val loanListActivity =
+                                Intent(this@LoginActivity, LoanListActivity::class.java)
+                            loanListActivity.putExtra(EXTRA_USERID, response.userId)
+                            startActivity(loanListActivity)
                         }
                     }
 
@@ -86,17 +95,5 @@ class LoginActivity : AppCompatActivity() {
             )
 
         }
-    }
-
-    private fun retrieveAllData() {
-        Backendless.Data.of(Loan::class.java).find(object : AsyncCallback<List<Loan>> {
-            override fun handleResponse(foundLoans: List<Loan>?) {
-                Log.d(TAG, "handleResponse: $foundLoans")
-            }
-
-            override fun handleFault(fault: BackendlessFault?) {
-                Log.d(TAG, "handleFault: ${fault?.message}")
-            }
-        })
     }
 }
