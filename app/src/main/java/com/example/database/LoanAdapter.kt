@@ -3,19 +3,23 @@ package com.example.database
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.PopupMenu
 import android.widget.TextView
+import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.recyclerview.widget.RecyclerView
 import database.R
 
-class LoanAdapter(private val dataSet: List<Loan>) :
+class LoanAdapter(private val dataSet: MutableList<Loan>) :
     RecyclerView.Adapter<LoanAdapter.ViewHolder>() {
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
-        private val textViewLoanItemLendee: TextView
-        private val textViewLoanItemBallanceLeft: TextView
+        val textViewLoanItemLendee: TextView
+        val textViewLoanItemBalanceRemaining: TextView
+        val constraintLayoutLoanListLayout: ConstraintLayout
 
         init {
             textViewLoanItemLendee = view.findViewById(R.id.textView_loanItem_lendee)
-            textViewLoanItemBallanceLeft = view.findViewById(R.id.textView_loanItem_ballanceRemaining)
+            textViewLoanItemBalanceRemaining = view.findViewById(R.id.textView_loanItem_balanceRemaining)
+            constraintLayoutLoanListLayout = view.findViewById((R.id.constraintLayout_loanItem_layout))
         }
     }
 
@@ -23,16 +27,21 @@ class LoanAdapter(private val dataSet: List<Loan>) :
     override fun onCreateViewHolder(viewGroup: ViewGroup, viewType: Int): ViewHolder {
         // Create a new view, which defines the UI of the list item
         val view = LayoutInflater.from(viewGroup.context)
-            .inflate(R.layout.activity_loan_list, viewGroup, false)
-
+            .inflate(R.layout.loan_item, viewGroup, false)
         return ViewHolder(view)
     }
 
     // Replace the contents of a view (invoked by the layout manager)
     override fun onBindViewHolder(viewHolder: ViewHolder, position: Int) {
-
-        // Get element from your dataset at this position and replace the
-        // contents of the view with that element
+//        val context = viewHolder.constraintLayoutLoanListLayout.context
+        viewHolder.textViewLoanItemLendee.text = dataSet[position].lendee
+        viewHolder.textViewLoanItemBalanceRemaining.text = dataSet[position].ballanceRemaining().toString()
+//        viewHolder.constraintLayoutLoanListLayout.isLongClickable = true
+//        viewHolder.constraintLayoutLoanListLayout.setOnLongClickListener {
+//            val popupMenu = PopupMenu(context, viewHolder.textViewLoanItemLendee)
+//            popupMenu.inflate(R.menu)
+//            true
+//        }
     }
 
     // Return the size of your dataset (invoked by the layout manager)
