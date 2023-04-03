@@ -45,7 +45,7 @@ class LoanListActivity : AppCompatActivity() {
                     Log.d(TAG, "handleResponse: $foundLoans")
                     if (foundLoans != null) {
                         loans = foundLoans as MutableList<Loan>
-                        adapter = LoanAdapter(loans)
+                        adapter = LoanAdapter(loans, this@LoanListActivity)
                         binding.recyclerViewLoanList.adapter = adapter
                         binding.recyclerViewLoanList.layoutManager =
                             LinearLayoutManager(this@LoanListActivity)

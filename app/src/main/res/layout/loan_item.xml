@@ -7,12 +7,12 @@
     android:layout_height="wrap_content">
 
     <TextView
-        android:id="@+id/textView_loanItem_lendee"
+        android:id="@+id/textView_loanItem_borrower"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginTop="16dp"
-        android:text="Lendee Name"
+        android:text="Borrower Name"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
@@ -30,7 +30,7 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.0"
-        app:layout_constraintStart_toEndOf="@+id/textView_loanItem_lendee"
+        app:layout_constraintStart_toEndOf="@+id/textView_loanItem_borrower"
         app:layout_constraintTop_toTopOf="parent"
         app:layout_constraintVertical_bias="0.0" />
 </androidx.constraintlayout.widget.ConstraintLayout>
