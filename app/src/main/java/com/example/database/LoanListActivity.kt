@@ -1,6 +1,7 @@
 package com.example.database
 
 import android.annotation.SuppressLint
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -59,5 +60,11 @@ class LoanListActivity : AppCompatActivity() {
                 }
             }
         )
+    }
+
+    fun onLoanItemClicked(loan: Loan) {
+        val intent = Intent(this, LoanDetailActivity::class.java)
+        intent.putExtra(LoanDetailActivity.EXTRA_LOAN, loan)
+        startActivity(intent)
     }
 }

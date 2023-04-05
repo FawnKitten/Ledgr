@@ -13,6 +13,7 @@ import com.backendless.Backendless
 import com.backendless.async.callback.AsyncCallback
 import com.backendless.exceptions.BackendlessFault
 import database.R
+import java.lang.RuntimeException
 
 class LoanAdapter(private val dataSet: MutableList<Loan>, private val context: Activity) :
     RecyclerView.Adapter<LoanAdapter.ViewHolder>() {
@@ -64,6 +65,12 @@ class LoanAdapter(private val dataSet: MutableList<Loan>, private val context: A
             }
             popMenu.show()
             true
+        }
+        viewHolder.constraintLayoutLoanListLayout.setOnClickListener {
+            when (context) {
+                is LoanListActivity -> context.onLoanItemClicked(dataSet[position])
+                else -> throw RuntimeException("Unreachable") // TODO: handle this more elegantly
+            }
         }
     }
 

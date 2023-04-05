@@ -24,7 +24,8 @@ class LoanDetailActivity : AppCompatActivity() {
     lateinit var loan : Loan
 
     companion object {
-        val EXTRA_LOAN = "loan"
+        const val EXTRA_LOAN = "loan"
+        const val TAG = "LoanDetailActivity"
     }
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -37,8 +38,20 @@ class LoanDetailActivity : AppCompatActivity() {
         binding.editTextLoanDetailInitialLoan.setText(loan.initialLoan.toString())
         binding.editTextLoanDetailBorrower.setText(loan.borrower)
         binding.editTextLoanDetailAmountRepaid.setText(loan.amountRepaid.toString())
-        binding.textViewLoanDetailAmountStillOwed.text = String.format("Still Owed %.2f", loan.initialLoan - loan.amountRepaid)
+        binding.textViewLoanDetailAmountStillOwed.text = String.format("Still Owed %.2f", loan.balanceRemaining()/100.0)
 
+        binding.buttonLoanDetailSave.setOnClickListener {
+            Backendless.Persistence.of(Loan::class.java).save(loan, object : AsyncCallback<Loan> {
+                override fun handleResponse(response: Loan?) {
+                    Log.d(TAG, "handleResponse: Saved successfully")
+                }
+
+                override fun handleFault(fault: BackendlessFault?) {
+                    Log.e(TAG, "handleFault: $fault")
+                }
+
+            })
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {
@@ -93,7 +106,7 @@ class LoanDetailActivity : AppCompatActivity() {
             binding.editTextLoanDetailInitialLoan.isEnabled = false
             binding.checkBoxLoanDetailIsFullyRepaid.isClickable = false
         } else {
-            loanIsEditable = false
+            loanIsEditable = true
             binding.buttonLoanDetailSave.isEnabled = true
             binding.buttonLoanDetailSave.visibility = View.VISIBLE
             binding.checkBoxLoanDetailIsFullyRepaid.isEnabled = true
