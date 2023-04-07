@@ -24,7 +24,8 @@ class LoanDetailActivity : AppCompatActivity() {
     lateinit var loan : Loan
 
     companion object {
-        const val EXTRA_LOAN = "loan"
+        const val EXTRA_LOAN = "EXTRA_LOAN"
+        const val EXTRA_USERID = "EXTRA_USERID"
         const val TAG = "LoanDetailActivity"
     }
 
@@ -33,25 +34,64 @@ class LoanDetailActivity : AppCompatActivity() {
         binding = ActivityLoanDetailBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        loan = intent.getParcelableExtra(EXTRA_LOAN) ?: Loan()
-        binding.checkBoxLoanDetailIsFullyRepaid.isChecked = loan.isFullyRepaid
-        binding.editTextLoanDetailInitialLoan.setText(loan.initialLoan.toString())
-        binding.editTextLoanDetailBorrower.setText(loan.borrower)
-        binding.editTextLoanDetailAmountRepaid.setText(loan.amountRepaid.toString())
-        binding.textViewLoanDetailAmountStillOwed.text = String.format("Still Owed %.2f", loan.balanceRemaining()/100.0)
+        val extraLoan = intent.getParcelableExtra<Loan>(EXTRA_LOAN)
+        if (extraLoan == null) {
+            Log.d(TAG, "onCreate: Loan not saved")
+            loan = Loan()
+            toggleEditable()
+            binding.buttonLoanDetailSave.setOnClickListener {
+                Log.d(TAG, "onCreate: Saving Loan")
+                loan.borrower = binding.editTextLoanDetailBorrower.text.toString()
+                loan.description = ""
+                loan.initialLoan = Integer
+                    .parseInt(binding.editTextLoanDetailInitialLoan.text.toString())
+                loan.dateLoaned = cal.time
+                loan.amountRepaid = Integer
+                    .parseInt(binding.editTextLoanDetailAmountRepaid.text.toString())
+                loan.ownerId = intent.getStringExtra(EXTRA_USERID)!!
+                loan.objectId = "" // Set when saving on database
+                Backendless.Data.of(Loan::class.java)
+                    .save(loan, object : AsyncCallback<Loan> {
+                        override fun handleResponse(response: Loan?) {
+                            TODO("Not yet implemented")
+                        }
 
-        binding.buttonLoanDetailSave.setOnClickListener {
-            Backendless.Persistence.of(Loan::class.java).save(loan, object : AsyncCallback<Loan> {
-                override fun handleResponse(response: Loan?) {
-                    Log.d(TAG, "handleResponse: Saved successfully")
-                }
+                        override fun handleFault(fault: BackendlessFault?) {
+                            Log.e(TAG, "handleFault: $fault")
+                        }
 
-                override fun handleFault(fault: BackendlessFault?) {
-                    Log.e(TAG, "handleFault: $fault")
-                }
+                    })
+            }
+        } else {
+            Log.d(TAG, "onCreate: Mutating loan")
+            loan = extraLoan
+            binding.checkBoxLoanDetailIsFullyRepaid.isChecked = loan.isFullyRepaid
+            binding.editTextLoanDetailInitialLoan.setText(loan.initialLoan.toString())
+            binding.editTextLoanDetailBorrower.setText(loan.borrower)
+            binding.editTextLoanDetailAmountRepaid.setText(loan.amountRepaid.toString())
+            binding.textViewLoanDetailAmountStillOwed.text = String.format("Still Owed %.2f", loan.balanceRemaining()/100.0)
+            binding.buttonLoanDetailSave.setOnClickListener {
+                loan.borrower = binding.editTextLoanDetailBorrower.text.toString()
+                loan.description = ""
+                loan.initialLoan = Integer
+                    .parseInt(binding.editTextLoanDetailInitialLoan.text.toString())
+                loan.dateLoaned = cal.time
+                loan.amountRepaid = Integer
+                    .parseInt(binding.editTextLoanDetailAmountRepaid.text.toString())
+                Backendless.Persistence.of(Loan::class.java)
+                    .save(loan, object : AsyncCallback<Loan> {
+                        override fun handleResponse(response: Loan?) {
+                            Log.d(TAG, "handleResponse: Saved successfully")
+                        }
 
-            })
+                        override fun handleFault(fault: BackendlessFault?) {
+                            Log.e(TAG, "handleFault: $fault")
+                        }
+                    })
+            }
         }
+        loan = intent.getParcelableExtra(EXTRA_LOAN) ?: Loan()
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu): Boolean {

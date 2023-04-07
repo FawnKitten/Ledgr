@@ -31,6 +31,13 @@ class LoanListActivity : AppCompatActivity() {
         userId = intent?.getStringExtra(LoginActivity.EXTRA_USERID).toString()
         Log.d(TAG, "onCreate: $userId")
         retrieveAllData(userId)
+
+        binding.fabLoanListAddLoan.setOnClickListener {
+            val intent = Intent(this, LoanDetailActivity::class.java).apply {
+                putExtra(LoginActivity.EXTRA_USERID, userId)
+            }
+            startActivity(intent)
+        }
     }
 
     private fun retrieveAllData(userId: String) {
