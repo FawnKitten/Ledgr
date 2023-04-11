@@ -26,8 +26,8 @@ data class Loan(
     var amountRepaid: Int = 0, // Also cents
     var dateFullRepayment: Date? = null,
     var isFullyRepaid: Boolean = false,
-    var ownerId: String = "",
-    var objectId: String = ""
+    var ownerId: String? = null,
+    var objectId: String? = null,
 ) : Parcelable {
     fun balanceRemaining(): Int {
         return initialLoan - amountRepaid

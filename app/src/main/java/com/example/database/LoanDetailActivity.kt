@@ -19,8 +19,8 @@ import java.util.*
 class LoanDetailActivity : AppCompatActivity() {
 
     private lateinit var binding : ActivityLoanDetailBinding
-    var loanIsEditable = false
-    var cal = Calendar.getInstance()
+    private var loanIsEditable = false
+    private var cal = Calendar.getInstance()
     lateinit var loan : Loan
 
     companion object {
@@ -36,7 +36,8 @@ class LoanDetailActivity : AppCompatActivity() {
 
         val extraLoan = intent.getParcelableExtra<Loan>(EXTRA_LOAN)
         if (extraLoan == null) {
-            Log.d(TAG, "onCreate: Loan not saved")
+            Log.d(TAG, "onCreate: Loan is Null")
+            Log.d(TAG, "onCreate: UserID is ${intent.getStringExtra(LoginActivity.EXTRA_USERID)}")
             loan = Loan()
             toggleEditable()
             binding.buttonLoanDetailSave.setOnClickListener {
@@ -48,12 +49,12 @@ class LoanDetailActivity : AppCompatActivity() {
                 loan.dateLoaned = cal.time
                 loan.amountRepaid = Integer
                     .parseInt(binding.editTextLoanDetailAmountRepaid.text.toString())
-                loan.ownerId = intent.getStringExtra(EXTRA_USERID)!!
-                loan.objectId = "" // Set when saving on database
+                loan.ownerId = intent.getStringExtra(LoginActivity.EXTRA_USERID)!!
+                loan.objectId = null // Set when saving on database
                 Backendless.Data.of(Loan::class.java)
                     .save(loan, object : AsyncCallback<Loan> {
                         override fun handleResponse(response: Loan?) {
-                            TODO("Not yet implemented")
+                            Log.d(TAG, "handleResponse: Created new loan $loan")
                         }
 
                         override fun handleFault(fault: BackendlessFault?) {
@@ -71,6 +72,7 @@ class LoanDetailActivity : AppCompatActivity() {
             binding.editTextLoanDetailAmountRepaid.setText(loan.amountRepaid.toString())
             binding.textViewLoanDetailAmountStillOwed.text = String.format("Still Owed %.2f", loan.balanceRemaining()/100.0)
             binding.buttonLoanDetailSave.setOnClickListener {
+                Log.d(TAG, "onCreate: isChecked ${binding.checkBoxLoanDetailIsFullyRepaid.isChecked}")
                 loan.borrower = binding.editTextLoanDetailBorrower.text.toString()
                 loan.description = ""
                 loan.initialLoan = Integer
@@ -78,10 +80,11 @@ class LoanDetailActivity : AppCompatActivity() {
                 loan.dateLoaned = cal.time
                 loan.amountRepaid = Integer
                     .parseInt(binding.editTextLoanDetailAmountRepaid.text.toString())
+                loan.isFullyRepaid = binding.checkBoxLoanDetailIsFullyRepaid.isChecked
                 Backendless.Persistence.of(Loan::class.java)
                     .save(loan, object : AsyncCallback<Loan> {
                         override fun handleResponse(response: Loan?) {
-                            Log.d(TAG, "handleResponse: Saved successfully")
+                            Log.d(TAG, "handleResponse: Edited successfully $response")
                         }
 
                         override fun handleFault(fault: BackendlessFault?) {
@@ -126,7 +129,7 @@ class LoanDetailActivity : AppCompatActivity() {
                 }
 
                 override fun handleFault(fault: BackendlessFault) {
-                    Log.d("BirthdayDetail", "handleFault: ${fault.message}")
+                    Log.d(TAG, "handleFault: ${fault.message}")
                 }
             })
     }

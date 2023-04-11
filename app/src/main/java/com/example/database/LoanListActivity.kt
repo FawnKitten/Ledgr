@@ -30,14 +30,18 @@ class LoanListActivity : AppCompatActivity() {
         setContentView(binding.root)
         userId = intent?.getStringExtra(LoginActivity.EXTRA_USERID).toString()
         Log.d(TAG, "onCreate: $userId")
-        retrieveAllData(userId)
 
         binding.fabLoanListAddLoan.setOnClickListener {
-            val intent = Intent(this, LoanDetailActivity::class.java).apply {
-                putExtra(LoginActivity.EXTRA_USERID, userId)
-            }
+            Log.d(TAG, "onCreate: Creating a new loan")
+            val intent = Intent(this, LoanDetailActivity::class.java)
+            intent.putExtra(LoginActivity.EXTRA_USERID, userId)
             startActivity(intent)
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+        retrieveAllData(userId)
     }
 
     private fun retrieveAllData(userId: String) {
@@ -58,7 +62,6 @@ class LoanListActivity : AppCompatActivity() {
                         binding.recyclerViewLoanList.layoutManager =
                             LinearLayoutManager(this@LoanListActivity)
                         adapter.notifyDataSetChanged()
-                        Log.d(TAG, "handleResponse: data set changed")
                     }
                 }
 

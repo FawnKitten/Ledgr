@@ -1,6 +1,7 @@
 package com.example.database
 
 import android.app.Activity
+import android.graphics.Color
 import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
@@ -25,11 +26,13 @@ class LoanAdapter(private val dataSet: MutableList<Loan>, private val context: A
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val textViewLoanItemBorrower: TextView
         val textViewLoanItemBalanceRemaining: TextView
+        val textViewLoanItemDescription: TextView
         val constraintLayoutLoanListLayout: ConstraintLayout
 
         init {
             textViewLoanItemBorrower = view.findViewById(R.id.textView_loanItem_borrower)
             textViewLoanItemBalanceRemaining = view.findViewById(R.id.textView_loanItem_balanceRemaining)
+            textViewLoanItemDescription = view.findViewById(R.id.textView_loanItem_description)
             constraintLayoutLoanListLayout = view.findViewById((R.id.constraintLayout_loanItem_layout))
         }
     }
@@ -48,6 +51,18 @@ class LoanAdapter(private val dataSet: MutableList<Loan>, private val context: A
         viewHolder.textViewLoanItemBorrower.text = dataSet[position].borrower
         viewHolder.textViewLoanItemBalanceRemaining.text = dataSet[position].balanceRemaining().toString()
 //        holder.textViewAmountOwed.text = String.format("$%.2f", loan.initialLoanValue-loan.amountRepaid)
+        viewHolder.textViewLoanItemDescription.text = dataSet[position].description
+        if (dataSet[position].isFullyRepaid) { // set text to gray if loan is fully repaid
+            Log.d(TAG, "onBindViewHolder: Fully Repaid ${dataSet[position]}")
+            viewHolder.textViewLoanItemBorrower.setTextColor(Color.LTGRAY)
+            viewHolder.textViewLoanItemBalanceRemaining.setTextColor(Color.LTGRAY)
+            viewHolder.textViewLoanItemDescription.setTextColor(Color.LTGRAY)
+        } else { // set to black if it isn't
+            Log.d(TAG, "onBindViewHolder: Not Fully Repaid ${dataSet[position]}")
+            viewHolder.textViewLoanItemBorrower.setTextColor(Color.BLACK)
+            viewHolder.textViewLoanItemBalanceRemaining.setTextColor(Color.BLACK)
+            viewHolder.textViewLoanItemDescription.setTextColor(Color.BLACK)
+        }
         viewHolder.constraintLayoutLoanListLayout.isLongClickable = true
         viewHolder.constraintLayoutLoanListLayout.setOnLongClickListener {
             val popMenu = PopupMenu(context, viewHolder.textViewLoanItemBorrower)
